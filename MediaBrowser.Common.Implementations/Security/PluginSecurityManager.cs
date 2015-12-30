@@ -356,15 +356,7 @@ namespace MediaBrowser.Common.Implementations.Security
 
         private bool IsInTrial(DateTime expirationDate, bool regChecked, bool isRegistered)
         {
-            //don't set this until we've successfully obtained exp date
-            if (!regChecked)
-            {
-                return false;
-            }
-
-            var isInTrial = expirationDate > DateTime.UtcNow;
-
-            return (isInTrial && !isRegistered);
+            return true;
         }
 
         /// <summary>
