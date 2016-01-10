@@ -422,7 +422,7 @@
 
             afterConnected(apiClient, options);
 
-            onLocalUserSignIn(result.User);
+            onLocalUserSignIn(server, server.LastConnectionMode, result.User);
         }
 
         function saveUserInfoIntoCredentials(server, user) {
@@ -452,7 +452,10 @@
             }
         }
 
-        function onLocalUserSignIn(user) {
+        function onLocalUserSignIn(server, connectionMode, user) {
+
+            // Ensure this is created so that listeners of the event can get the apiClient instance
+            getOrAddApiClient(server, connectionMode);
 
             Events.trigger(self, 'localusersignedin', [user]);
         }
@@ -575,7 +578,7 @@
 
                         }).then(function (user) {
 
-                            onLocalUserSignIn(user);
+                            onLocalUserSignIn(server, connectionMode, user);
                             resolve();
 
                         }, function () {
@@ -850,24 +853,27 @@
 
             return new Promise(function (resolve, reject) {
 
+                var onFinish = function (foundServers) {
+                    var servers = foundServers.map(function (foundServer) {
+
+                        var info = {
+                            Id: foundServer.Id,
+                            LocalAddress: foundServer.Address,
+                            Name: foundServer.Name,
+                            ManualAddress: convertEndpointAddressToManualAddress(foundServer),
+                            DateLastLocalConnection: new Date().getTime()
+                        };
+
+                        info.LastConnectionMode = info.ManualAddress ? ConnectionMode.Manual : ConnectionMode.Local;
+
+                        return info;
+                    });
+                    resolve(servers);
+                };
+
                 require(['serverdiscovery'], function (serverDiscovery) {
-                    serverDiscovery.findServers(1000).then(function (foundServers) {
-
-                        var servers = foundServers.map(function (foundServer) {
-
-                            var info = {
-                                Id: foundServer.Id,
-                                LocalAddress: foundServer.Address,
-                                Name: foundServer.Name,
-                                ManualAddress: convertEndpointAddressToManualAddress(foundServer),
-                                DateLastLocalConnection: new Date().getTime()
-                            };
-
-                            info.LastConnectionMode = info.ManualAddress ? ConnectionMode.Manual : ConnectionMode.Local;
-
-                            return info;
-                        });
-                        resolve(servers);
+                    serverDiscovery.findServers(1000).then(onFinish, function () {
+                        onFinish([]);
                     });
 
                 });

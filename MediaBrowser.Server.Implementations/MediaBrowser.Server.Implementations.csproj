@@ -130,7 +130,6 @@
     <Compile Include="EntryPoints\LibraryChangedNotifier.cs" />
     <Compile Include="EntryPoints\LoadRegistrations.cs" />
     <Compile Include="EntryPoints\Notifications\Notifications.cs" />
-    <Compile Include="EntryPoints\Notifications\RemoteNotifications.cs" />
     <Compile Include="EntryPoints\Notifications\WebSocketNotifier.cs" />
     <Compile Include="EntryPoints\RefreshUsersMetadata.cs" />
     <Compile Include="EntryPoints\UsageEntryPoint.cs" />
@@ -409,6 +408,8 @@
     <EmbeddedResource Include="Localization\Core\zh-CN.json" />
     <EmbeddedResource Include="Localization\Core\zh-TW.json" />
     <EmbeddedResource Include="Localization\Core\zh-HK.json" />
+    <EmbeddedResource Include="Localization\Core\hu.json" />
+    <EmbeddedResource Include="Localization\Core\id.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

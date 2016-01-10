@@ -158,6 +158,7 @@ namespace MediaBrowser.Common.Implementations.Security
             }
         }
 
+<<<<<<< HEAD
         public async Task<SupporterInfo> GetSupporterInfo()
         {
             var key = SupporterKey;
@@ -217,6 +218,8 @@ namespace MediaBrowser.Common.Implementations.Security
             }
         }
 
+=======
+>>>>>>> upstream/master
         /// <summary>
         /// Register an app store sale with our back-end.  It will validate the transaction with the store
         /// and then register the proper feature and then fill in the supporter key on success.

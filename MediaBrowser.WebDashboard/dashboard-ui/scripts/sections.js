@@ -2,9 +2,7 @@
 
     function getUserViews(userId) {
 
-        var deferred = $.Deferred();
-
-        ApiClient.getUserViews({}, userId).then(function (result) {
+        return ApiClient.getUserViews({}, userId).then(function (result) {
 
             var items = result.Items;
 
@@ -44,10 +42,8 @@
                 }
             }
 
-            deferred.resolveWith(null, [list]);
+            return list;
         });
-
-        return deferred.promise();
     }
 
     function enableScrollX() {
@@ -336,7 +332,6 @@
                 html += '<div class="itemsContainer">';
                 html += LibraryBrowser.getPosterViewHtml({
                     items: result.Items,
-                    preferThumb: true,
                     shape: 'auto',
                     showTitle: true,
                     centerText: true,

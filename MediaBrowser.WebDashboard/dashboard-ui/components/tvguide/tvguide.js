@@ -15,7 +15,7 @@
 
         var currentDate;
 
-        var defaultChannels = 100;
+        var defaultChannels = browserInfo.mobile ? 50 : 100;
         var channelLimit = 1000;
 
         var channelQuery = {
@@ -104,17 +104,17 @@
                     $(channelPaging);
                 }
 
-                Events.on(page.querySelector('.btnNextPage'), 'click', function () {
+                page.querySelector('.btnNextPage').addEventListener('click', function () {
                     channelQuery.StartIndex += channelQuery.Limit;
                     reloadChannels(page);
                 });
 
-                Events.on(page.querySelector('.btnPreviousPage'), 'click', function () {
+                page.querySelector('.btnPreviousPage').addEventListener('click', function () {
                     channelQuery.StartIndex -= channelQuery.Limit;
                     reloadChannels(page);
                 });
 
-                Events.on(page.querySelector('#selectPageSize'), 'change', function () {
+                page.querySelector('#selectPageSize').addEventListener('change', function () {
                     channelQuery.Limit = parseInt(this.value);
                     channelQuery.StartIndex = 0;
                     reloadChannels(page);

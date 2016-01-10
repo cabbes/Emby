@@ -1,4 +1,4 @@
-﻿(function (window, chrome, console) {
+﻿define(['https://www.gstatic.com/cv/js/sender/v1/cast_sender.js'], function () {
 
     // Based on https://github.com/googlecast/CastVideos-chrome/blob/master/CastVideos.js
     var currentResolve;
@@ -34,7 +34,7 @@
         'IDLE': 0,
         'ACTIVE': 1,
         'WARNING': 2,
-        'ERROR': 3,
+        'ERROR': 3
     };
 
     /**
@@ -52,10 +52,11 @@
     };
 
     var applicationID = "2D4B1DA3";
-    var messageNamespace = 'urn:x-cast:com.connectsdk';
 
-    //var applicationID = "F4EB2E8E";
-    //var messageNamespace = 'urn:x-cast:com.google.cast.mediabrowser.v3';
+    // This is the beta version used for testing new changes
+    //applicationID = '27C4EB5B';
+
+    var messageNamespace = 'urn:x-cast:com.connectsdk';
 
     var CastPlayer = function () {
 
@@ -88,6 +89,8 @@
      * receiverListener may be invoked at any time afterwards, and possibly more than once. 
      */
     CastPlayer.prototype.initializeCastPlayer = function () {
+
+        var chrome = window.chrome;
 
         if (!chrome) {
             return;
@@ -340,8 +343,6 @@
 
         var player = this;
 
-        var bitrateSetting = AppSettings.maxChromecastBitrate();
-
         var receiverName = null;
 
         if (castPlayer.session && castPlayer.session.receiver && castPlayer.session.receiver.friendlyName) {
@@ -353,10 +354,13 @@
             deviceId: ApiClient.deviceId(),
             accessToken: ApiClient.accessToken(),
             serverAddress: ApiClient.serverAddress(),
-            maxBitrate: bitrateSetting,
-            receiverName: receiverName,
-            supportsAc3: AppSettings.enableChromecastAc3()
+            receiverName: receiverName
         });
+
+        var bitrateSetting = AppSettings.maxChromecastBitrate();
+        if (bitrateSetting) {
+            message.maxBitrate = bitrateSetting;
+        }
 
         require(['chromecasthelpers'], function (chromecasthelpers) {
 
@@ -674,14 +678,16 @@
 
         self.getTargets = function () {
 
-            var targets = [];
+            return new Promise(function (resolve, reject) {
 
-            if (castPlayer.hasReceivers) {
-                targets.push(self.getCurrentTargetInfo());
-            }
+                var targets = [];
 
-            return targets;
+                if (castPlayer.hasReceivers) {
+                    targets.push(self.getCurrentTargetInfo());
+                }
 
+                resolve(targets);
+            });
         };
 
         self.getCurrentTargetInfo = function () {
@@ -857,9 +863,17 @@
 
         castPlayer = new CastPlayer();
 
-        MediaController.registerPlayer(new chromecastPlayer());
+        var registeredPlayer = new chromecastPlayer();
+        MediaController.registerPlayer(registeredPlayer);
+
+        // To allow the native android app to override
+        document.dispatchEvent(new CustomEvent("chromecastloaded", {
+            detail: {
+                player: registeredPlayer
+            }
+        }));
     }
 
-    requirejs(["https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"], initializeChromecast);
+    initializeChromecast();
 
-})(window, window.chrome, console);
+});
